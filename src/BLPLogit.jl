@@ -1,4 +1,5 @@
 module BLPLogit
+export BLPparameters
 struct BLPparameters
     ρ::Float64
     T::Int64
