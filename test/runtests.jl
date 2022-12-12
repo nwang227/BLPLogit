@@ -21,18 +21,17 @@ end
 
 function simlate_utility(pa::BLPparameters)
     @unpack ρ,T,J,I,σ1,σ2,α,β1,β2 = pa
-    mvnormal = MvNormal(zeros(T), Array( Diagonal(ones(T)) .* ρ))
-    ϵ= rand(mvnormal, T*J*I)
-    char1 = rand(mvnormal, T*J*I)
-    char2 = rand(mvnormal, T*J*I)
-    p = rand(mvnormal, T*J*I)
-    ξ = rand(mvnormal, T*J*I)
+    ϵ= reshape(rand(Logistic(),J*I),J,I)
+    char1 = reshape(rand(Normal(0,1),J*I),J,I)
+    char2 = reshape(rand(Normal(0,1),J*I),J,I)
+    p = reshape(rand(Normal(0,1),J*I),J,I)
+    ξ = reshape(rand(Normal(0,1),J*I),J,I)
     δ = -α .*p + β1 .* char1 + β2 .* char2 + ξ
-    ν1 = rand(Normal(0.0, 1),I)
-    ν2 = rand(Normal(0.0, 1),I)
+    ν1 = rand(Normal(0, 1),I)
+    ν2 = rand(Normal(0, 1),I)
     
     U = zeros(T,J,I)
-    
+
     for i in 1:T
         for j in 1:J
             for t in 1:I
@@ -44,9 +43,11 @@ function simlate_utility(pa::BLPparameters)
     return (p, char1, char2, U) = (p, char1, char2, U)
 end
 
+simlate_utility(pa::BLPparameters)
 
-function simulate_choices(pa::BLPparameters)
-    U = simlate_utility(pa::BLPparameters)[4]
+function simulate_BLP(pa::BLPparameters)
+    A = simlate_utility(pa::BLPparameters)
+    U = A[4]
     @unpack T,I = pa
     c = zeros(I,T)
     for i in 1:I
@@ -54,7 +55,11 @@ function simulate_choices(pa::BLPparameters)
         c[i,t] = findmax(U[i,:,t])[2]
         end 
     end 
-    return (c=c)
+    return (p= A[1],char1=A[2],char2=A[3] ,c=c)
 end
 
-simulate_choices(pa)
+pa = BLPparameters(3,10,10,10,1,1,1,1,1)
+simulate_BLP(pa)
+
+
+
