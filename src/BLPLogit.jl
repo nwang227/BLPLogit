@@ -4,7 +4,7 @@ module BLPLogit
 using CSV, DataFrames, Optim, Random, LinearAlgebra
 export cshare, cdelta, delta_full, obj
 
-#Function for conjectured share for one market
+#Function for conjectured share for one marke
 function cshare(delta::Vector, p::Vector, char::Matrix, v::Matrix, σ)
     ns,k1 = length(v1)
     k = length(p)
@@ -81,3 +81,5 @@ function est_mixed(p, char, share, z, tol, NS)
 
 
 end
+
+end 
