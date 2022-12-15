@@ -15,7 +15,7 @@ struct BLPparameters
     β::AbstractVector
 end
 
-pa= BLPparameters(10,10,10,5,[-1,2,1],1,[1,1,1])
+pa= BLPparameters(10,10,100,5,[-1,2,1],1,[1,1,1])
 
 
 
@@ -29,7 +29,7 @@ function simlate_utility(pa::BLPparameters)
     δ = reshape(-α .*p + char*β + ξ, J,T)
     mvnormalv= MvNormal(zeros(length(σ)), Array(Diagonal(ones(length(σ)))));
     v = rand(mvnormalv,I)'
-    U = zeros(T,J,I)
+    U = zeros(I,J,T)
 
 
     pchar = hcat(p, char[:,1:length(σ)-1])
@@ -55,7 +55,7 @@ function simulate_BLP(pa::BLPparameters)
     c = zeros(I,T,M)
     U = simlate_utility(pa::BLPparameters)[3]
     for m in 1:M 
-        n = rand(DiscreteUniform(2,J))
+        n = rand(DiscreteUniform(5,J))
         for i in 1:I
             for t in 1:T
             c[i,t,m] = findmax(rand(U[i,:,t],n))[2]
@@ -67,9 +67,8 @@ end
 
 simulate_BLP(pa)[3]
 
-@unpack p, char, c = simulate_BLP(pa)
-@unpack T,J,I,M,σ,α,β = pa
-p
+
+
 
 function createrep(J,T)
     v = ones(J)
@@ -102,25 +101,9 @@ function createdataframe(J,T,M)
     
     return hcat(a[2:end],D,E)
 end
-
+@unpack p, char, c = simulate_BLP(pa)
+@unpack T,J,I,M,σ,α,β = pa
 DF = createdataframe(J,T,M)
 
 
-
-
-
-
-s =zeros(J,T,M)
-for m in 1:M
-    for j in 1:J
-        for t in 1:T
-            s[j,t,m]= sum(c[:,t, m].==j)/I
-        end 
-    end
-end 
-
-a = zeros(1)
-for m in 1:M 
-a = vcat(a, reshape(s[:,:,m],J*T,1))
-end 
-a[2:end]
+rand(DiscreteUniform(5,J))
