@@ -1,20 +1,48 @@
-
-
 struct BLPparameters
+    """
+    Time periods of observations
+    """
     T::Int64
+    """
+    Number of products
+    """
     J::Int64
+    """
+    Number of consumers
+    """
     I::Int64
+    """
+    Number of Markets
+    """
     M::Int64
+    """
+    Coefficient vector for price and individual charateristics effect on utility
+    """
     σ::AbstractVector
+    """
+    Price coefficienton on $\delta$ portion of utility
+    """
     α::Float64
+    """
+    Coefficient vector for aggegregated charateristics effect on $\delta$ portion of utility
+    """
     β::AbstractVector
 end
 
 pa= BLPparameters(10,10,100,5,[-1,2,1],1,[1,1,1])
 
+"""
+simulate_raw(pa::BLPparameters)
+Simulate consumers' utility draws, prices, and product characteristics 
+# Arguments
+- `pa::BLPparameters` 
 
+Returns `(p, char, U)` where `p` is a `J*T` length vector, char is a `k*(J*T)` matrix where `k` is the number of charteristics,
+and `U` is an `I*J*T` matrix. 
+  
+"""
 
-function simulate_utility(pa::BLPparameters)
+function simulate_raw(pa::BLPparameters)
     @unpack T,J,I,σ,α,β = pa
     ϵ= rand(Logistic(),J*T*I)
     mvnormalchar= MvNormal(zeros(length(β)), Array(Diagonal(ones(length(β)))));
@@ -43,7 +71,19 @@ end
 
 simulate_utility(pa::BLPparameters)[1]
 
-@unpack p, char, U = simulate_utility(pa)
+@unpack p, char, U = simulate_raw(pa)
+
+"""
+simulate_BLP(pa::BLPparameters)
+Simulate  prices, product characteristics, and consumers' consumption chioces. 
+# Arguments
+- `pa::BLPparameters` 
+
+Returns `(p, char, C)` where `p` is a `J*T` length vector capturing prices for product `j` at time `t` 
+, char is a `k*(J*T)` matrix where `k` is the number of charteristics (char captures capturing charteristics k for product `j` at time `t` ),
+and `c` is an `I*T*M` matrix (`c[i,t,m]` is consumer i's product choice at market `m` time `t`).
+  
+"""
 function simulate_BLP(pa::BLPparameters)
     @unpack T,I,J,M = pa
     c = zeros(I,T,M)
@@ -61,7 +101,16 @@ end
 
 simulate_BLP(pa)
 
+"""
+createrep(J,T)
+create [1,1,1,2,2,2,...,T,T,T] type of vector
+# Arguments
+- `J::Int64` 
+- `T::Int64`
 
+Returns `v` where `v` is a `J*T` length vector.
+  
+"""
 
 
 function createrep(J,T)
@@ -72,8 +121,19 @@ function createrep(J,T)
     return v
 end 
 
+"""
+create_data_matrix(J::int64,T::int64,M::int64)
+Simulate  prices, product characteristics, and consumers' consumption chioces and create a data matrix whose columns are 
+Shares,prices,charteristics,product id, time ,market
+# Arguments
+- `pa::BLPparameters` 
 
-function create_data_matrix(J,T,M)
+Returns `DM` is a datamatrix consisting market shares,prices,charteristics,product id, time ,market id
+"""
+
+function create_data_matrix(pa::BLPparameters)
+    @unpack T,J,M= pa
+    @unpack p, char, c = simulate_BLP(pa)
     A = repeat([1:J;],T)
     B = createrep(J,T)
     C = hcat(p,char,A,B)
@@ -93,9 +153,11 @@ function create_data_matrix(J,T,M)
         a = vcat(a, reshape(s[:,:,m],J*T,1))
         end 
     
-    return hcat(a[2:end],D,E) # Shares,prices,charteristics,product id, time ,market
+    return (DM = hcat(a[2:end],D,E)) # Shares,prices,charteristics,product id, time ,market
 end
 @unpack p, char, c = simulate_BLP(pa)
 @unpack T,J,I,M,σ,α,β = pa
-DM = create_data_matrix(J,T,M) 
+
+create_data_matrix(pa::BLPparameters)
 df = DataFrame(DM, ["Shares","Prices","charteristics1","charteristics2", "charteristics3","product id", "time" ,"market"])
+
