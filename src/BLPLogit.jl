@@ -2,7 +2,7 @@ module BLPLogit
 
 # Write your package code here.
 using CSV, DataFrames, Optim, Random, LinearAlgebra
-export cshare, cdelta, delta_full, obj
+export cshare, cdelta, delta_full, obj, BLPparameters, simulate_raw, simulate_BLP, createrep, create_data_matrix
 
 
 
