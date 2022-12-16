@@ -154,7 +154,6 @@ function create_data_matrix(pa::BLPparameters)
     return (DM = hcat(a[2:end],D,E)) # Shares,prices,charteristics,product id, time ,market
 end
 
-pa = Main.BLPLogit.BLPparameters(10,10,10000,5,[-1,2,1,1],1,[.5,3,10])
-DM = BLPLogit.create_data_matrix(pa::Main.BLPLogit.BLPparameters)
+
 
 
