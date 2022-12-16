@@ -66,7 +66,7 @@ function cdelta(p,char,share,v, σ,tol)
 
     while error > tol
         delta0 = delta1
-        j = cshare(delta0, p, char, v, σ)
+        j = BLPLogit.cshare(delta0, p, char, v, σ)
         delta1 = delta0 + log.(share) - log.(j)
         error = (delta1 - delta0)' * (delta1 - delta0)
     end
@@ -112,10 +112,10 @@ function est_mixed(p, s,ch, c, NS, ini, tol)
     n,k = size(ch)
     v = randn(NS, k)
 
-    result1 = optimize(sig -> obj(sig, p, ch,s,v,c,tol)[1], ini)
+    result1 = optimize(sig -> BLPLogit.obj(sig, p, ch,s,v,c,tol)[1], ini)
 
     θ2 = Optim.minimizer(result1)
-    println("θ1 =", round.(obj(θ2 ,p, ch,s,v,c, tol)[2], digits = 3))
+    println("θ1 =", round.(BLPLogit.obj(θ2 ,p, ch,s,v,c, tol)[2], digits = 3))
     println("θ2 =",  round.(θ2, digits = 3))
 end
 
