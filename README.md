@@ -11,11 +11,11 @@ This Julia package is created to estimate mixed logit set-ups following the Berr
 $$u_{ijt} = \delta_{jt} + \mu_{ijt} + \epsilon_{ijt}$$
 
 
-* Mean utility $\delta$ is the same for all the consumers for the same product. 
+* Mean utility $\delta$ is the same for all the consumers for the same product. Parameters of interest are $\theta_1 = (\alpha, \beta)$. 
 $$\delta_{jt} = \alpha p_{jt} + x_{jt}' \beta + \xi_{jt} $$
 
 
-* Consumers' can have individual preference $\nu_{ik}$ on any product characteristics including price. The individual utility $\mu_{ijt}$ can be written as: $$\mu_{ijt} = \sigma_1 \nu_{i1} p_{jt} + \sum_{k = 1}^K \sigma_{k+1} \nu_{i{k+1}} x_{jk}$$  
+* Consumers' can have individual preference $\nu_{ik}$ on any product characteristics including price. The parameters of interest are $\theta_1 = [\sigma_1,..,\sigma_K]$. The individual utility $\mu_{ijt}$ can be written as: $$\mu_{ijt} = \sigma_1 \nu_{i1} p_{jt} + \sum_{k = 1}^K \sigma_{k+1} \nu_{i{k+1}} x_{jk}$$  
 
 
 
@@ -45,6 +45,19 @@ Our simulation function allows user to generate mixed logit discrete data with c
 
 ### 1. Data Preperation
 
-To estimate mixed logit parameters, the user will need to first standardize their data set for estimation function. This process can be done by `blpdata`
+To estimate mixed logit parameters, the user will need to first standardize their data set for estimation function. This process can be done by `blpdata(df::DataFrame, p::String, s::String, char::Vector{String},id::String, cost::Vector{String)`. 
+
+The first input of this function is user's data set in the format of `DataFrame`, which should contain information on products' `prices`, `shares`, `characteristics`, `cost shifters`(instrument variables) and `ids`. The users will also need specify the column names of each variable as the rest of the input. We allow each product to have multiple numbers of chatacteristics and cost shifters as long as all the column names are specified.
+
+As for `ids` we allow two ways to include. First, the user can provide one vector of unique time-market id for each time-market pair so that they only have one colomn name to specify as `id`. Instead, the users can also provide one id for `time` and another for `market` and input use the dispatch ` blpdata(df::DataFrame,p::String, s::String, char::Vector{String},t::String,m::String, cost::Vector{String})`.
+
+The output of `blpdata` are four dataframes, which can be directly used as input of the estiamtion function `est_mixed`. The four dataframes have data on `prices`, `shares`, `characteristics`, and `cost shifters` respectively with `id`.
+
+## 2. Estimation 
+
+The user can use `est_mixed(p::DataFrame, s::DataFrame,ch::DataFrame, c::DataFrame, NS::Int64, ini::Vector, tol::Float64)` function to estimate all the parameters of interest in the above mixed logit setting. The inputs of this function are four dataframes, which can be obtained using `blpdata`, level of integration apporximation `NS`, the initial guess of $\theta_2$ `ini`, and the tolerence in contraction mapping `tol`. With these inputs, `est_mixed` will spit out estimations for $\theta_1$ and $\theta_2$ repectively.
+
+The rest of the functions are supporting the estimation in `est_mixed`. `cshare` and `cdelta` can be used to find $s_{jt}(\delta, x_{jt}, p_{jt})$ and $\delta^* (\sigma)$ for one market at a time. `delta_full` estimate $\delta^* (\sigma)$ for all market at all time. `obj` gives a GMM estimator and evaluates the GMM objective function.
+
 
 
