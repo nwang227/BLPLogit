@@ -14,7 +14,7 @@ We allow each product to have several characteristics, and our function can hand
 """""""
 
 
-function blpdata(df::DataFrame, p::String, s::String, char::Vector{String},id::String, cost::String)
+function blpdata(df::DataFrame, p::String, s::String, char::Vector{String},id::String, cost::Vector{String})
     price = select(df,[p,id])
     share = select(df, [s,id])
     character = select(df, char)
@@ -25,7 +25,7 @@ function blpdata(df::DataFrame, p::String, s::String, char::Vector{String},id::S
 end
 
 #Function for constructing data if there are only time and market id
-function blpdata(df::DataFrame,p::String, s::String, char::Vector{String},t::String,m::String, cost::String)
+function blpdata(df::DataFrame,p::String, s::String, char::Vector{String},t::String,m::String, cost::Vector{String})
     ids = Matrix(select(df, [t,m]))
     n,k = size(ids)
     upair = [ids[i,:] for i in i:n]
