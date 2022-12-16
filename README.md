@@ -53,7 +53,7 @@ As for `ids` we allow two ways to include. First, the user can provide one vecto
 
 The output of `blpdata` are four dataframes, which can be directly used as input of the estiamtion function `est_mixed`. The four dataframes have data on `prices`, `shares`, `characteristics`, and `cost shifters` respectively with `id`.
 
-## 2. Estimation 
+### 2. Estimation 
 
 The user can use `est_mixed(p::DataFrame, s::DataFrame,ch::DataFrame, c::DataFrame, NS::Int64, ini::Vector, tol::Float64)` function to estimate all the parameters of interest in the above mixed logit setting. The inputs of this function are four dataframes, which can be obtained using `blpdata`, level of integration apporximation `NS`, the initial guess of $\theta_2$ `ini`, and the tolerence in contraction mapping `tol`. With these inputs, `est_mixed` will spit out estimations for $\theta_1$ and $\theta_2$ repectively.
 
