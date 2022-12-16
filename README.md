@@ -5,8 +5,34 @@ This Julia package is created to estimate mixed logit set-ups following the Berr
 [![Coverage](https://codecov.io/gh/nwang227/BLPLogit.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/nwang227/BLPLogit.jl)
 
 ## Model Discriptions
-* Consumer $i$ in market $m$ at time $t$ has $J$ different product choices and one outside option . 
-* Consumer $i$ has unobserved consumer demographics $\nu_i \equiv [\nu_{1i},...,\nu_{hi}]'$ is an $h$-element vector and $\nu_{ni}$ denotes the $n$ th demographics of consumer $i$.
-* For product $j$ at time $t$, econometricians observe the price $p_{jt}$, charatertics of the product $char_{jt}$ where $char_{jt} \equiv [char1_{jt},...,chark_{jt}]'$ is a $k$-element vector and $charn_{jt}$ demotes the $n$ th charateristic of the product. 
-* Consumer $i$ has the following utility function: $$u_{ijt} = \delta_{jt}-\sigma_1\nu_{1i}p_{jt} + \sigma_2\nu_{2i}char1_{jt} +...+ \sigma_{q}\nu_{2i}charq_{jt} + \epsilon_{ijt}.$$ where $$\delta_{jt}= -\alpha p_{jt} + \beta_1char1_{jt} +...+ \beta_k chark_{jt}  + \xi_{jt}.$$
+* Consumer $i$ in market $m$ at time $t$ makes a discrete choice between $J$ different products and one outside option. 
+
+* Consumers' utility can be divided into three parts: a mean utility $\delta_{jt}$, a individual utility $\mu_{ijt}$ and an error term $\epsilon_{ijt}$.
+$$u_{ijt} = \delta_{jt} + \mu_{ijt} + \epsilon_{ijt}$$
+
+
+* Mean utility $\delta$ is the same for all the consumers for the same product. 
+$$\delta_{jt} = \alpha p_{jt} + x_{jt}' \beta + \xi_{jt} $$
+
+
+* Consumers' can have individual preference $\nu_{ik}$ on any product characteristics including price. The individual utility $\mu_{ijt}$ can be written as: $$\mu_{ijt} = \sigma_1 \nu_{i1} p_{jt} + \sum_{k = 1}^K \sigma_{k+1} \nu_{i{k+1}} x_{jk}$$  
+
+
+
+* Metricians observe the price $p_{jt}$, charatertics of the product $char_{jt}$ where $char_{jt} \equiv [char1_{jt},...,chark_{jt}]'$ is a $k$-element vector and $charn_{jt}$ demotes the $n$ th charateristic of the product. 
+
+
+
 * $\epsilon_{ijt}$ is Type I Extreme Value Distributed.
+
+
+
+## Estimation Method
+
+1. Have a guess on $\sigma$
+2. Following BLP(1995), use contraction mapping find $\delta^* (\sigma)$ for all $j$ and $t$ such that $$s_{jt} = s_{jt}(\delta^* (\sigma), x_{jt}, p_{jt})$$
+3. Estimate $(\alpha, \beta)$ using a GMM estimator with cost shifters as instruments.
+4. Evaluate GMM objective function.
+5. Repeat step 1-4 until gobal minimum is found.
+
+
