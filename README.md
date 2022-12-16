@@ -55,9 +55,32 @@ The output of `blpdata` are four dataframes, which can be directly used as input
 
 ## 2. Estimation 
 
-The user can use `est_mixed(p::DataFrame, s::DataFrame,ch::DataFrame, c::DataFrame, NS::Int64, ini::Vector, tol::Float64)` function to estimate all the parameters of interest in the above mixed logit setting. The inputs of this function are four dataframes, which can be obtained using `blpdata`, level of integration apporximation `NS`, the initial guess of $\theta_2$ `ini`, and the tolerence in contraction mapping `tol`. With these inputs, `est_mixed` will spit out estimations for $\theta_1$ and $\theta_2$ repectively.
+The user can use `est_mixed(p::DataFrame, s::DataFrame,ch::DataFrame, c::DataFrame, NS::Int64, ini::Vector, tol::Float64)` function to estimate all the parameters of interest in the above mixed logit setting. The inputs of this function are four dataframes, which can be obtained using `blpdata`, level of integration apporximation `NS`, the initial guess of $\theta_2$ `ini`, and the tolerence in contraction mapping `tol`. With these inputs, `est_mixed` will spit out estimations for $\theta_1$ and $\theta_2$ repectively. Here $\theta_1 = [\hat{\alpha} {\beta}]'$ and $\theta_2 = \hat{\sigma}$.
 
 The rest of the functions are supporting the estimation in `est_mixed`. `cshare` and `cdelta` can be used to find $s_{jt}(\delta, x_{jt}, p_{jt})$ and $\delta^* (\sigma)$ for one market at a time. `delta_full` estimate $\delta^* (\sigma)$ for all market at all time. `obj` gives a GMM estimator and evaluates the GMM objective function.
+
+### 3. Simulation
+
+To simulate a data set, one should first define BLP parameters, for example 
+
+```jl
+pa = Main.BLPLogit.BLPparameters(10,10,10000,5,[1,.5,4,.2],.1,[.5,.3,.1])
+```
+
+The arguments in the BLPparameters are times periods, number of products, number of consumers, number of markets, $\sigma$, $\alpha$, $\beta$, respectively.
+
+Once the user have the BLPparameter, the user can simulate a datamatrix using the data creation function:
+
+```jl
+DM = BLPLogit.create_data_matrix(pa::Main.BLPLogit.BLPparameters)
+```
+One can convert the datamatrix to a dataframe:
+
+```jl
+df = DataFrame(DM, ["Shares","Prices","charteristics1","charteristics2", "charteristics3","product id", "time" ,"market"])
+```
+
+
 
 
 
