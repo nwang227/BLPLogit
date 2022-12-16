@@ -24,7 +24,7 @@ using Test
         θ1= BLPLogit.est_mixed(p, s,ch, c, NS, ini, tol)[1]
         θ2= BLPLogit.est_mixed(p, s,ch, c, NS, ini, tol)[2]
         @unpack α, β, σ = pa
-  @test isapprox(θ1, vcat(α,β))
+  @test isapprox(θ1, vcat(α,β)) #test if the estimation is close to the true value
   @test isapprox(θ2, σ)
 end
 
