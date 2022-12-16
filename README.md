@@ -36,3 +36,7 @@ $$\delta_{jt} = \alpha p_{jt} + x_{jt}' \beta + \xi_{jt} $$
 5. Repeat step 1-4 until gobal minimum is found.
 
 
+## Simulation
+
+Our simulation function allows user to generate mixed logit discrete data with costomized parameters. Our test is based on this simulation function, in which we generate a simulation data and check whether the estimation resutls are close to our pre-set parameters.
+
