@@ -7,6 +7,12 @@ export cshare, cdelta, delta_full, obj, BLPparameters, simulate_raw, simulate_BL
 include("Simulations.jl")
 
 #Function for constructing desired data set if there exists a time-marekt id
+"""""""
+This blpdata function can be used to split the dataframe that the user provide. A user will need to feed the function a dataframe that contains product-level data on its price, market share, cost shifter(the instruments), characteristics, and specify the column name of each variable in the dataframe.
+    
+We allow each product to have several characteristics, and our function can handle it as long as the user specify all the column names. As for time and market id, we allow two methods. The user can either provide a market-time id for each unique market-time pair, or he/she can provide the time id and market id seperately.
+"""""""
+
 
 function blpdata(df::DataFrame, p::String, s::String, char::Vector{String},id::String, cost::String)
     price = select(df,[p,id])
@@ -36,7 +42,9 @@ end
 
 
 
-
+"""""""""
+The rest of the functions are used for estimation. cshare and cdelta funciton estimate the shares and mean utilities of all the products in a market at a time. delta_full function estimate the mean utilities for all the products in all the markets at all time. obj is the GMM objective funciton which can spit out both the GMM estimator and the residual.
+"""""""""
 
 #Function for conjectured share for one market
 function cshare(delta::Vector, p::Vector, char::Matrix, v::Matrix, σ)
