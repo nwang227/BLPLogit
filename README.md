@@ -40,3 +40,11 @@ $$\delta_{jt} = \alpha p_{jt} + x_{jt}' \beta + \xi_{jt} $$
 
 Our simulation function allows user to generate mixed logit discrete data with costomized parameters. Our test is based on this simulation function, in which we generate a simulation data and check whether the estimation resutls are close to our pre-set parameters.
 
+
+## User Guideline
+
+### 1. Data Preperation
+
+To estimate mixed logit parameters, the user will need to first standardize their data set for estimation function. This process can be done by `blpdata`
+
+
