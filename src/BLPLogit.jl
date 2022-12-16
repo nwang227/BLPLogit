@@ -1,10 +1,10 @@
 module BLPLogit
 
 # Write your package code here.
-using CSV, DataFrames, Optim, Random, LinearAlgebra
+using CSV, DataFrames, Optim, Random, LinearAlgebra, UnPack, Distributions
 export cshare, cdelta, delta_full, obj, BLPparameters, simulate_raw, simulate_BLP, createrep, create_data_matrix
 
-
+include("Simulations.jl")
 
 #Function for constructing desired data set if there exists a time-marekt id
 
@@ -88,6 +88,7 @@ function delta_full(σ, p,ch,s,v, tol)
         δ_new = BLPLogit.cdelta(price,char,share,v, σ,tol)
         δ = vcat(δ, δ_new)
     end
+    δ = replace(δ, NaN => 1)
     return δ
 end
 
@@ -98,8 +99,8 @@ function obj(σ ,p,ch,s,v,c,tol)
     p = p[:,1]
     char = Matrix(ch[:, 1:k-1])
     z1 = Matrix(c)
-    x = hcat(ones(1800), p, char)
-    z = hcat(ones(1800), char, z1)
+    x = hcat(ones(n), p, char)
+    z = hcat(ones(n), char, z1)
     w = inv(z' * z)
     beta = (x'* z * w * z' * x)^-1  * (x'* z * w * z' * δ)
     u = δ - x * beta
@@ -115,8 +116,11 @@ function est_mixed(p, s,ch, c, NS, ini, tol)
     result1 = optimize(sig -> BLPLogit.obj(sig, p, ch,s,v,c,tol)[1], ini)
 
     θ2 = Optim.minimizer(result1)
-    println("θ1 =", round.(BLPLogit.obj(θ2 ,p, ch,s,v,c, tol)[2], digits = 3))
-    println("θ2 =",  round.(θ2, digits = 3))
+    θ1 = round.(BLPLogit.obj(θ2 ,p, ch,s,v,c, tol)[2], digits = 3)
+    θ2 = round.(θ2, digits = 3)
+    println("θ1 =", θ1)
+    println("θ2 =",  θ2)
+    return (θ1 = θ1, θ2 = θ2)
 end
 
 end

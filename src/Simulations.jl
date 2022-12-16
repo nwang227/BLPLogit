@@ -21,16 +21,16 @@ struct BLPparameters
     """
     σ::AbstractVector
     """
-    Price coefficienton on $\delta$ portion of utility
+    Price coefficienton on delta portion of utility
     """
     α::Float64
     """
-    Coefficient vector for aggegregated charateristics effect on $\delta$ portion of utility
+    Coefficient vector for aggegregated charateristics effect on delta portion of utility
     """
     β::AbstractVector
 end
 
-pa= BLPparameters(10,10,100,5,[-1,2,1],1,[1,1,1])
+pa= BLPparameters(10,10,100,5,[-1,2,1,1],1,[1,1,1])
 
 """
 simulate_raw(pa::BLPparameters)
@@ -56,7 +56,7 @@ function simulate_raw(pa::BLPparameters)
     U = zeros(I,J,T)
 
 
-    pchar = hcat(p, char[:,1:length(σ)-1])
+    pchar = hcat(p, char)
     ϵm =  reshape(ϵ,I,J,T)
     for i in 1:I
         for j in 1:J
@@ -70,9 +70,6 @@ function simulate_raw(pa::BLPparameters)
     return (p = p, char=char, U=U)
 end
 
-simulate_utility(pa::BLPparameters)[1]
-
-@unpack p, char, U = simulate_raw(pa)
 
 """
 simulate_BLP(pa::BLPparameters)
@@ -88,7 +85,7 @@ and `c` is an `I*T*M` matrix (`c[i,t,m]` is consumer i's product choice at marke
 function simulate_BLP(pa::BLPparameters)
     @unpack T,I,J,M = pa
     c = zeros(I,T,M)
-    @unpack p, char, U = simulate_utility(pa)
+    @unpack p, char, U = simulate_raw(pa)
     for m in 1:M 
         n = rand(DiscreteUniform(5,J))
         for i in 1:I
@@ -133,7 +130,7 @@ Returns `DM` is a datamatrix consisting market shares,prices,charteristics,produ
 """
 
 function create_data_matrix(pa::BLPparameters)
-    @unpack T,J,M= pa
+    @unpack T,J,M,I= pa
     @unpack p, char, c = simulate_BLP(pa)
     A = repeat([1:J;],T)
     B = createrep(J,T)
@@ -144,7 +141,7 @@ function create_data_matrix(pa::BLPparameters)
         for m in 1:M
             for j in 1:J
                 for t in 1:T
-                    s[j,t,m]= sum(c[:,t, m].==j)/I
+                    s[j,t,m]= sum(c[:,t, m].==j)./(convert(AbstractFloat,I))
                 end 
             end
         end 
@@ -156,8 +153,8 @@ function create_data_matrix(pa::BLPparameters)
     
     return (DM = hcat(a[2:end],D,E)) # Shares,prices,charteristics,product id, time ,market
 end
-@unpack p, char, c = simulate_BLP(pa)
-@unpack T,J,I,M,σ,α,β = pa
 
-create_data_matrix(pa::BLPparameters)
-df = DataFrame(DM, ["Shares","Prices","charteristics1","charteristics2", "charteristics3","product id", "time" ,"market"])
+pa = Main.BLPLogit.BLPparameters(10,10,10000,5,[-1,2,1,1],1,[.5,3,10])
+DM = BLPLogit.create_data_matrix(pa::Main.BLPLogit.BLPparameters)
+
+
