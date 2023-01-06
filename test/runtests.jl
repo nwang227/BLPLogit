@@ -1,5 +1,5 @@
-using .BLPLogit
-using Test
+using BLPLogit
+using Test, UnPack, DataFrames
 
 @testset "BLPLogit.jl" begin
     pa = Main.BLPLogit.BLPparameters(10,10,10000,5,[1,.5,4,.2],.1,[.5,.3,.1])
@@ -13,8 +13,8 @@ using Test
         c = ["charteristics1", "charteristics2", "charteristics3"]
         d = "time"
         e = "market"
-        e = "Prices"
-        p,s,ch,c = BLPLogit.blpdata(df,a,b,c,d,e)
+        iv = ["Prices", c...]
+        p,s,ch,c = BLPLogit.blpdata(df,a,b,c,d,e, iv)
 
 
         NS = 1000
